@@ -5,10 +5,12 @@
 //  Created by iOS Dev Ninja on 2/1/2025.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @State private var users = [User]()
+    @Environment(\.modelContext) var modelContext
+    @Query var users: [User]
     
     var body: some View {
         NavigationStack {
@@ -23,20 +25,20 @@ struct ContentView: View {
                             VStack(alignment: .leading) {
                                 Text(user.name)
                                     .font(.headline)
-                                Text(user.isActive ? "Active" : "Inacrive")
+                                Text(user.isActive ? "Active" : "Inactive")
                                     .foregroundStyle(user.isActive ? .green : .red)
                                     .font(.subheadline)
                             }
                         }
                     }
-                    
-                    
                 }
             }
             .navigationTitle("FriendFace")
             .background(.clear)
             .task {
-                await loadData()
+                if users.isEmpty {
+                    await loadData()
+                }
             }
         }
         .padding()
@@ -44,6 +46,7 @@ struct ContentView: View {
     }
     
     func loadData() async {
+        print("loadData")
         guard let url = URL(string: "https://www.hackingwithswift.com/samples/friendface.json") else {
             print("Invalid URL")
             return
@@ -54,10 +57,20 @@ struct ContentView: View {
             
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
-            if let response = try? decoder.decode([User].self, from: data) {
-                users = response
-                print("Loaded Data - users.count \(users.count)")
+
+            let decodedUsers = try decoder.decode([User].self, from: data)
+
+            await MainActor.run {
+                for user in decodedUsers {
+                    modelContext.insert(user)
+                    print("modelContext - inserted user")
+                }
+                try? modelContext.save()
+                print("modelContext - inserted saved")
+
             }
+            
+            
         } catch {
             print("Invalid Data")
         }
@@ -66,4 +79,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .modelContainer(for: User.self, inMemory: true)
 }

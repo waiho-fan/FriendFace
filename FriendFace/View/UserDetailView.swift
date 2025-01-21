@@ -5,11 +5,15 @@
 //  Created by Gary on 3/1/2025.
 //
 
+import SwiftData
 import SwiftUI
 
 struct UserDetailView: View {
+    @Environment(\.modelContext) var modelContext
     let user: User
     
+    @Query var allUsers: [User]
+
     var body: some View {
         List {
             Section {
@@ -60,18 +64,48 @@ struct UserDetailView: View {
 }
 
 #Preview {
-    UserDetailView(user: User(isActive: true, name: "Test Name", age: 20, company: "Test Company", email: "Test Email", address: "Test Address", about: "Test About...", registered: .now, tags: [
-        "officia",
-        "dolor",
-        "nisi",
-        "exercitation",
-        "deserunt",
-        "ad",
-        "aliquip"
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    
+    // 創建一個測試用的容器
+    let container = try! ModelContainer(
+        for: User.self,
+        configurations: config
+    )
+    
+    // 創建示例朋友數據
+    let previewFriends = [
+        Friend(name: "Test Friend01"),
+        Friend(name: "Test Friend02"),
+        Friend(name: "Test Friend03")
+    ]
+    
+    // 創建示例用戶數據
+    let previewUser = User(
+        isActive: true,
+        name: "Test Name",
+        age: 20,
+        company: "Test Company",
+        email: "test@example.com",
+        address: "Test Address",
+        about: "Test About...",
+        registered: .now,
+        tags: [
+            "officia",
+            "dolor",
+            "nisi",
+            "exercitation",
+            "deserunt",
+            "ad",
+            "aliquip"
         ],
-                              friends: [Friend(name: "Test Friend01"),
-                                        Friend(name: "Test Friend02"),
-                                        Friend(name: "Test Friend03")]))
+        friends: previewFriends
+    )
+    
+    // 將示例數據插入容器
+    container.mainContext.insert(previewUser)
+    
+    return UserDetailView(user: previewUser)
+        .modelContainer(container)
 }
 
 struct RowView: View {

@@ -18,7 +18,6 @@ struct FlowLayout: Layout {
         var maxHeight: CGFloat = 0
         var lineHeight: CGFloat = 0
         
-        // 計算每個視圖的位置
         for (index, size) in sizes.enumerated() {
             if index != 0 {
                 position.x += horizontalSpacing
