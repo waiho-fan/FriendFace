@@ -6,6 +6,7 @@ A SwiftUI social networking app that demonstrates modern iOS development practic
 
 <div align="left">
   <p float="left">
+    <img src="/FriendFace/Screenshot/demo.gif" width="250" alt="Demo" />
     <img src="/FriendFace/Screenshot/user-list.png" width="250" alt="User List" />
     <img src="/FriendFace/Screenshot/user-detail-01.png" width="250" alt="User Detail 01" />
     <img src="/FriendFace/Screenshot/user-detail-02.png" width="250" alt="User Detail 02" />
